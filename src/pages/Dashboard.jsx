@@ -482,6 +482,7 @@ function Dashboard() {
                   <tr>
                     <th>#</th><th>Type</th><th>Date & Time</th>
                     <th>Customer / Interviewer</th><th>Phone No</th><th>Brand</th>
+                    <th>Model</th>
                     <th>Competition Model</th>
                     <th>Role</th><th>Purchase Trigger / Reason</th>
                     <th>Breakdowns</th><th>Decision Maker</th><th>Action</th>
@@ -489,7 +490,7 @@ function Dashboard() {
                 </thead>
                 <tbody>
                   {displayRows.length === 0 ? (
-                    <tr><td colSpan={12} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>No entries found.</td></tr>
+                    <tr><td colSpan={13} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>No entries found.</td></tr>
                   ) : displayRows.map((row, idx) => {
                     const isDeleting = deleting === `${row._type}-${row._rowIndex}`;
                     const isPhone = row._type === 'telephonic';
@@ -520,6 +521,7 @@ function Dashboard() {
                             </span>
                           ) : '—'}
                         </td>
+                        <td>{row['Model'] || '—'}</td>
                         <td>{row['Competition Model'] || '—'}</td>
                         <td>{row['Role'] || '—'}</td>
                         <td style={{ maxWidth: '200px', whiteSpace: 'normal', lineHeight: 1.4, fontSize: '0.83rem' }}>
