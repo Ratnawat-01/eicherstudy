@@ -132,7 +132,7 @@ function InPersonForm() {
           <div className="form-grid">
             <div className="form-group">
               <label>Date</label>
-              <input type="date" name="date" value={formData.date} onChange={handleChange} required />
+              <input type="date" name="date" value={formData.date} onChange={handleChange} />
             </div>
             <div className="form-group">
               <label>Time Start/End</label>
@@ -140,7 +140,7 @@ function InPersonForm() {
             </div>
             <div className="form-group">
               <label>Interviewer Name</label>
-              <input type="text" name="interviewerName" value={formData.interviewerName} onChange={handleChange} required />
+              <input type="text" name="interviewerName" value={formData.interviewerName} onChange={handleChange} />
             </div>
             <div className="form-group">
               <label>Respondent Code</label>
@@ -148,7 +148,7 @@ function InPersonForm() {
             </div>
             <div className="form-group">
               <label>Brand Being Surveyed</label>
-              <select name="brand" value={formData.brand} onChange={handleChange} required>
+              <select name="brand" value={formData.brand} onChange={handleChange}>
                 <option value="">Select Brand</option>
                 <option value="Eicher">Eicher</option>
                 <option value="Tata">Tata</option>
@@ -157,7 +157,7 @@ function InPersonForm() {
             </div>
             <div className="form-group">
               <label>Model Name</label>
-              <input type="text" name="model" value={formData.model} onChange={handleChange} required placeholder="e.g. Pro 3019" />
+              <input type="text" name="model" value={formData.model} onChange={handleChange} placeholder="e.g. Pro 3019" />
             </div>
           </div>
         </div>
@@ -170,7 +170,7 @@ function InPersonForm() {
             <div className="radio-group">
               {['Owner-Operator', 'Fleet Owner', 'Driver (decision-influencer)'].map(opt => (
                 <label key={opt} className="radio-label">
-                  <input type="radio" name="role" value={opt} checked={formData.role === opt} onChange={handleChange} required />
+                  <input type="radio" name="role" value={opt} checked={formData.role === opt} onChange={handleChange} />
                   <span>{opt}</span>
                 </label>
               ))}
@@ -192,7 +192,7 @@ function InPersonForm() {
             </div>
             <div className="form-group">
               <label>Competition Model</label>
-              <input type="text" name="competitionModel" value={formData.competitionModel} onChange={handleChange} required placeholder="e.g. Tata LPT 1916" />
+              <input type="text" name="competitionModel" value={formData.competitionModel} onChange={handleChange} placeholder="e.g. Tata LPT 1916" />
             </div>
             <div className="form-group">
               <label>Truck age (years)</label>
@@ -229,7 +229,7 @@ function InPersonForm() {
           <h3>B. Purchase Trigger & Switching Behaviour</h3>
           <div className="form-group">
             <label>Q1. Single biggest trigger for buying THIS truck?</label>
-            <select name="purchaseTrigger" value={formData.purchaseTrigger} onChange={handleChange} required>
+            <select name="purchaseTrigger" value={formData.purchaseTrigger} onChange={handleChange}>
               <option value="">Select Reason</option>
               <option value="Old truck broke down / aged out">Old truck broke down / aged out</option>
               <option value="Business grew, needed more capacity">Business grew, needed more capacity</option>
@@ -248,7 +248,7 @@ function InPersonForm() {
             <div className="radio-group">
               {['Yes — already switched', 'Yes — considered, not done', 'No — never considered'].map(opt => (
                 <label key={opt} className="radio-label">
-                  <input type="radio" name="switchedBrand" value={opt} checked={formData.switchedBrand === opt} onChange={handleChange} required />
+                  <input type="radio" name="switchedBrand" value={opt} checked={formData.switchedBrand === opt} onChange={handleChange} />
                   <span>{opt}</span>
                 </label>
               ))}
@@ -274,12 +274,12 @@ function InPersonForm() {
         {/* Breakdowns */}
         <div className="form-section">
           <h3>C. Breakdown & Service Experience</h3>
-          <div className="form-group">
+          <div className="form-group" style={{ marginTop: '1.5rem' }}>
             <label>Q3. Breakdowns or major service in the last 1 year?</label>
             <div className="radio-group">
               {['Never', '1-2 times', '3-5 times', 'More than 5'].map(opt => (
                 <label key={opt} className="radio-label">
-                  <input type="radio" name="breakdowns" value={opt} checked={formData.breakdowns === opt} onChange={handleChange} required />
+                  <input type="radio" name="breakdowns" value={opt} checked={formData.breakdowns === opt} onChange={handleChange} />
                   <span>{opt}</span>
                 </label>
               ))}
@@ -304,12 +304,12 @@ function InPersonForm() {
         {/* Decision-Making */}
         <div className="form-section">
           <h3>D. Decision-Making</h3>
-          <div className="form-group">
+          <div className="form-group" style={{ marginTop: '1.5rem' }}>
             <label>Q4. Who takes the final decision when buying a new truck?</label>
             <div className="radio-group">
               {['Myself alone', 'With driver\'s input', 'With family\'s / partner\'s input'].map(opt => (
                 <label key={opt} className="radio-label">
-                  <input type="radio" name="decisionMaker" value={opt} checked={formData.decisionMaker === opt} onChange={handleChange} required />
+                  <input type="radio" name="decisionMaker" value={opt} checked={formData.decisionMaker === opt} onChange={handleChange} />
                   <span>{opt}</span>
                 </label>
               ))}
@@ -349,13 +349,13 @@ function InPersonForm() {
                   <tr key={attr}>
                     <td>{attr}</td>
                     <td>
-                      <select value={formData.ratings[attr].importance} onChange={(e) => handleRatingChange(attr, 'importance', e.target.value)} required>
+                      <select value={formData.ratings[attr].importance} onChange={(e) => handleRatingChange(attr, 'importance', e.target.value)}>
                         <option value="">-</option>
                         {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
                       </select>
                     </td>
                     <td>
-                      <select value={formData.ratings[attr].score} onChange={(e) => handleRatingChange(attr, 'score', e.target.value)} required>
+                      <select value={formData.ratings[attr].score} onChange={(e) => handleRatingChange(attr, 'score', e.target.value)}>
                         <option value="">-</option>
                         {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
                       </select>

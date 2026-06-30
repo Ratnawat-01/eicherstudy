@@ -124,15 +124,15 @@ function TelephonicForm() {
           <div className="form-grid">
             <div className="form-group">
               <label>Customer Name</label>
-              <input type="text" name="customerName" value={formData.customerName} onChange={handleChange} required />
+              <input type="text" name="customerName" value={formData.customerName} onChange={handleChange} />
             </div>
             <div className="form-group">
               <label>Phone No.</label>
-              <input type="text" name="phoneNo" value={formData.phoneNo} onChange={handleChange} required />
+              <input type="text" name="phoneNo" value={formData.phoneNo} onChange={handleChange} />
             </div>
             <div className="form-group">
               <label>Brand</label>
-              <select name="brand" value={formData.brand} onChange={handleChange} required>
+              <select name="brand" value={formData.brand} onChange={handleChange}>
                 <option value="">Select Brand</option>
                 <option value="Eicher">Eicher</option>
                 <option value="Tata">Tata</option>
@@ -141,11 +141,11 @@ function TelephonicForm() {
             </div>
             <div className="form-group">
               <label>Model Name</label>
-              <input type="text" name="model" value={formData.model} onChange={handleChange} required placeholder="e.g. Pro 3019" />
+              <input type="text" name="model" value={formData.model} onChange={handleChange} placeholder="e.g. Pro 3019" />
             </div>
             <div className="form-group">
               <label>Competition Model</label>
-              <input type="text" name="competitionModel" value={formData.competitionModel} onChange={handleChange} required placeholder="e.g. Tata LPT 1916" />
+              <input type="text" name="competitionModel" value={formData.competitionModel} onChange={handleChange} placeholder="e.g. Tata LPT 1916" />
             </div>
           </div>
           
@@ -154,7 +154,7 @@ function TelephonicForm() {
             <div className="radio-group">
               {['Owner-Operator', 'Fleet Owner', 'Driver'].map(opt => (
                 <label key={opt} className="radio-label">
-                  <input type="radio" name="role" value={opt} checked={formData.role === opt} onChange={handleChange} required />
+                  <input type="radio" name="role" value={opt} checked={formData.role === opt} onChange={handleChange} />
                   <span>{opt}</span>
                 </label>
               ))}
@@ -166,7 +166,7 @@ function TelephonicForm() {
             <div className="radio-group">
               {['< 1 yr', '1-3 yrs', '3-5 yrs', '5+ yrs'].map(opt => (
                 <label key={opt} className="radio-label">
-                  <input type="radio" name="yearsRunning" value={opt} checked={formData.yearsRunning === opt} onChange={handleChange} required />
+                  <input type="radio" name="yearsRunning" value={opt} checked={formData.yearsRunning === opt} onChange={handleChange} />
                   <span>{opt}</span>
                 </label>
               ))}
@@ -179,7 +179,7 @@ function TelephonicForm() {
           <h3>B. Purchase Trigger & Switching</h3>
           <div className="form-group">
             <label>Q3. Single biggest reason for buying this truck?</label>
-            <select name="purchaseReason" value={formData.purchaseReason} onChange={handleChange} required>
+            <select name="purchaseReason" value={formData.purchaseReason} onChange={handleChange}>
               <option value="">Select Reason</option>
               <option value="Old truck broke down">Old truck broke down</option>
               <option value="Business grew">Business grew</option>
@@ -194,7 +194,7 @@ function TelephonicForm() {
             <div className="radio-group">
               {['Yes - switched', 'Yes - considered, didn\'t', 'No'].map(opt => (
                 <label key={opt} className="radio-label">
-                  <input type="radio" name="switchedBrand" value={opt} checked={formData.switchedBrand === opt} onChange={handleChange} required />
+                  <input type="radio" name="switchedBrand" value={opt} checked={formData.switchedBrand === opt} onChange={handleChange} />
                   <span>{opt}</span>
                 </label>
               ))}
@@ -220,12 +220,12 @@ function TelephonicForm() {
         {/* Reliability Check */}
         <div className="form-section">
           <h3>C. Reliability Check</h3>
-          <div className="form-group">
+          <div className="form-group" style={{ marginTop: '1.5rem' }}>
             <label>Q5. Breakdowns or major repairs in the last 1 year?</label>
             <div className="radio-group">
               {['Never', '1-2 times', '3-5 times', '5+ times'].map(opt => (
                 <label key={opt} className="radio-label">
-                  <input type="radio" name="breakdowns" value={opt} checked={formData.breakdowns === opt} onChange={handleChange} required />
+                  <input type="radio" name="breakdowns" value={opt} checked={formData.breakdowns === opt} onChange={handleChange} />
                   <span>{opt}</span>
                 </label>
               ))}
@@ -236,12 +236,12 @@ function TelephonicForm() {
         {/* Decision Influence */}
         <div className="form-section">
           <h3>D. Decision Influence</h3>
-          <div className="form-group">
+          <div className="form-group" style={{ marginTop: '1.5rem' }}>
             <label>Q6. Who makes the final decision?</label>
             <div className="radio-group">
               {['Myself alone', 'With driver\'s input', 'With family\'s input'].map(opt => (
                 <label key={opt} className="radio-label">
-                  <input type="radio" name="decisionMaker" value={opt} checked={formData.decisionMaker === opt} onChange={handleChange} required />
+                  <input type="radio" name="decisionMaker" value={opt} checked={formData.decisionMaker === opt} onChange={handleChange} />
                   <span>{opt}</span>
                 </label>
               ))}
@@ -267,13 +267,13 @@ function TelephonicForm() {
                   <tr key={attr}>
                     <td>{attr}</td>
                     <td>
-                      <select value={formData.ratings[attr].importance} onChange={(e) => handleRatingChange(attr, 'importance', e.target.value)} required>
+                      <select value={formData.ratings[attr].importance} onChange={(e) => handleRatingChange(attr, 'importance', e.target.value)}>
                         <option value="">-</option>
                         {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
                       </select>
                     </td>
                     <td>
-                      <select value={formData.ratings[attr].score} onChange={(e) => handleRatingChange(attr, 'score', e.target.value)} required>
+                      <select value={formData.ratings[attr].score} onChange={(e) => handleRatingChange(attr, 'score', e.target.value)}>
                         <option value="">-</option>
                         {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
                       </select>
