@@ -298,3 +298,34 @@ function jsonOut(obj) {
     .createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
 }
+
+/**
+ * RUN THIS ONCE in the Apps Script editor if your sheet columns are mismatched!
+ * This will delete the old sheets and create fresh ones with the correct headers.
+ * WARNING: This will clear all existing entries.
+ */
+function setupFreshSheets() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Recreate 'telephonic' sheet
+  let telephonicSheet = ss.getSheetByName("telephonic");
+  if (telephonicSheet) {
+    ss.deleteSheet(telephonicSheet);
+  }
+  telephonicSheet = ss.insertSheet("telephonic");
+  writeHeaders(telephonicSheet, TELEPHONIC_HEADERS, "#1e40af");
+  telephonicSheet.autoResizeColumns(1, telephonicSheet.getLastColumn());
+  telephonicSheet.setFrozenRows(1);
+  
+  // Recreate 'in-person' sheet
+  let inPersonSheet = ss.getSheetByName("in-person");
+  if (inPersonSheet) {
+    ss.deleteSheet(inPersonSheet);
+  }
+  inPersonSheet = ss.insertSheet("in-person");
+  writeHeaders(inPersonSheet, IN_PERSON_HEADERS, "#6b21a8");
+  inPersonSheet.autoResizeColumns(1, inPersonSheet.getLastColumn());
+  inPersonSheet.setFrozenRows(1);
+  
+  Logger.log("Sheets successfully recreated with correct new headers!");
+}
