@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchDashboardData, deleteEntry } from '../api';
 import { Pie, Bar, Radar } from 'react-chartjs-2';
-import { Users, PhoneCall, TrendingUp, AlertTriangle, Trash2, RefreshCw } from 'lucide-react';
+import { Users, PhoneCall, TrendingUp, AlertTriangle, Trash2, RefreshCw, ExternalLink } from 'lucide-react';
 
 const CHART_COLORS = [
   'rgba(59,130,246,0.85)',
@@ -268,10 +268,29 @@ function Dashboard() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
         <h1 style={{ margin: 0 }}>Dashboard Overview</h1>
-        <button onClick={loadData} className="btn btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.9rem' }} disabled={loading}>
-          <RefreshCw size={16} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
-          Refresh
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <a 
+            href="https://docs.google.com/spreadsheets/d/1pylhNS66th5dr6yYXngRtrgp3dBFN8Deom0zSQKMetA/edit?usp=sharing" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="btn" 
+            style={{ 
+              background: 'linear-gradient(135deg, #10b981, #059669)', 
+              color: 'white', 
+              textDecoration: 'none', 
+              padding: '0.5rem 1.25rem', 
+              fontSize: '0.9rem',
+              boxShadow: '0 4px 15px rgba(16, 185, 129, 0.2)' 
+            }}
+          >
+            <ExternalLink size={16} />
+            View Google Sheet
+          </a>
+          <button onClick={loadData} className="btn btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.9rem' }} disabled={loading}>
+            <RefreshCw size={16} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* Interviewer Toggle */}
