@@ -16,15 +16,10 @@ const CHART_COLORS = [
 // ── All 10 telephonic attribute column names (as stored in Sheets) ────────────
 const TELEPHONIC_ATTRS = [
   { label: 'Fuel Mileage',    imp: 'Fuel Mileage – Importance',     sc: 'Fuel Mileage – Score' },
-  { label: 'Engine Power',    imp: 'Engine Power – Importance',     sc: 'Engine Power – Score' },
-  { label: 'Reliability',     imp: 'Reliability – Importance',      sc: 'Reliability – Score' },
+  { label: 'Engine',          imp: 'Engine – Importance',           sc: 'Engine – Score' },
   { label: 'Service Network', imp: 'Service Network – Importance',  sc: 'Service Network – Score' },
-  { label: 'Spare Parts',     imp: 'Spare Parts – Importance',      sc: 'Spare Parts – Score' },
   { label: 'Resale Value',    imp: 'Resale Value – Importance',     sc: 'Resale Value – Score' },
-  { label: 'Purchase Price',  imp: 'Purchase Price – Importance',   sc: 'Purchase Price – Score' },
-  { label: 'Cabin Comfort',   imp: 'Cabin Comfort – Importance',    sc: 'Cabin Comfort – Score' },
-  { label: 'Brand Trust',     imp: 'Brand Trust – Importance',      sc: 'Brand Trust – Score' },
-  { label: 'Load Capacity',   imp: 'Load Capacity – Importance',    sc: 'Load Capacity – Score' },
+  { label: 'Finance / Loan',  imp: 'Finance/Loan – Importance',     sc: 'Finance/Loan – Score' },
 ];
 
 // ── All 15 in-person attribute column names (as stored in Sheets) ─────────────
@@ -49,13 +44,10 @@ const IN_PERSON_ATTRS = [
 // ── Combined: 8 common attributes (matching labels that exist in both) ────────
 const COMBINED_ATTRS = [
   { label: 'Fuel Mileage / Economy', telImp: 'Fuel Mileage – Importance',    telSc: 'Fuel Mileage – Score',    ipImp: 'Fuel Economy – Importance',    ipSc: 'Fuel Economy – Score' },
-  { label: 'Engine Power',           telImp: 'Engine Power – Importance',    telSc: 'Engine Power – Score',    ipImp: 'Engine Power – Importance',    ipSc: 'Engine Power – Score' },
-  { label: 'Reliability',            telImp: 'Reliability – Importance',     telSc: 'Reliability – Score',     ipImp: 'Reliability – Importance',     ipSc: 'Reliability – Score' },
+  { label: 'Engine',                 telImp: 'Engine – Importance',          telSc: 'Engine – Score',          ipImp: 'Engine Power – Importance',    ipSc: 'Engine Power – Score' },
   { label: 'Service Network',        telImp: 'Service Network – Importance', telSc: 'Service Network – Score', ipImp: 'Service Network – Importance', ipSc: 'Service Network – Score' },
-  { label: 'Spare Parts',            telImp: 'Spare Parts – Importance',     telSc: 'Spare Parts – Score',     ipImp: 'Spare Parts – Importance',     ipSc: 'Spare Parts – Score' },
   { label: 'Resale Value',           telImp: 'Resale Value – Importance',    telSc: 'Resale Value – Score',    ipImp: 'Resale Value – Importance',    ipSc: 'Resale Value – Score' },
-  { label: 'Cabin Comfort',          telImp: 'Cabin Comfort – Importance',   telSc: 'Cabin Comfort – Score',   ipImp: 'Cabin Comfort – Importance',   ipSc: 'Cabin Comfort – Score' },
-  { label: 'Brand Trust',            telImp: 'Brand Trust – Importance',     telSc: 'Brand Trust – Score',     ipImp: 'Brand Trust – Importance',     ipSc: 'Brand Trust – Score' },
+  { label: 'Finance / EMI / Loan',   telImp: 'Finance/Loan – Importance',    telSc: 'Finance/Loan – Score',    ipImp: 'Finance/EMI – Importance',      ipSc: 'Finance/EMI – Score' },
 ];
 
 // ─── Helper: compute average of a numeric column in a list of rows ────────────
@@ -401,7 +393,7 @@ function Dashboard() {
               <div style={{ marginBottom: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(16,185,129,1)', display: 'inline-block' }}></span>
-                  <h3 style={{ margin: 0, fontSize: '1rem' }}>📞 Telephonic (10 Attributes)</h3>
+                  <h3 style={{ margin: 0, fontSize: '1rem' }}>📞 Telephonic (5 Attributes)</h3>
                 </div>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', margin: 0 }}>Solid = Importance &nbsp;|&nbsp; Dashed = Brand Score</p>
               </div>
@@ -442,7 +434,7 @@ function Dashboard() {
               <div style={{ marginBottom: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(99,102,241,1)', display: 'inline-block' }}></span>
-                  <h3 style={{ margin: 0, fontSize: '1rem' }}>📊 Combined Comparison (8 Common Attributes)</h3>
+                  <h3 style={{ margin: 0, fontSize: '1rem' }}>📊 Combined Comparison (5 Common Attributes)</h3>
                 </div>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', margin: 0 }}>Overlays both form types — green/blue = Telephonic &nbsp;|&nbsp; amber/purple = In-Person</p>
               </div>

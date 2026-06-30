@@ -31,26 +31,16 @@ var TELEPHONIC_HEADERS = [
   "Decision Maker",
   // Ratings – Importance
   "Fuel Mileage – Importance",
-  "Engine Power – Importance",
-  "Reliability – Importance",
+  "Engine – Importance",
   "Service Network – Importance",
-  "Spare Parts – Importance",
   "Resale Value – Importance",
-  "Purchase Price – Importance",
-  "Cabin Comfort – Importance",
-  "Brand Trust – Importance",
-  "Load Capacity – Importance",
+  "Finance/Loan – Importance",
   // Ratings – Brand Score
   "Fuel Mileage – Score",
-  "Engine Power – Score",
-  "Reliability – Score",
+  "Engine – Score",
   "Service Network – Score",
-  "Spare Parts – Score",
   "Resale Value – Score",
-  "Purchase Price – Score",
-  "Cabin Comfort – Score",
-  "Brand Trust – Score",
-  "Load Capacity – Score",
+  "Finance/Loan – Score",
   // Quote
   "Quote / Note"
 ];
@@ -121,15 +111,10 @@ var IN_PERSON_HEADERS = [
 // ─── MAP FORM FIELD KEYS TO COLUMN HEADERS ───────────────────────────────────
 var TELEPHONIC_ATTR_KEYS = [
   "Fuel mileage",
-  "Engine power / pickup",
-  "Reliability (fewer breakdowns)",
-  "Service network / distance",
-  "Spare parts cost & availability",
+  "Engine",
+  "Service network",
   "Resale value",
-  "Purchase price / EMI",
-  "Cabin comfort",
-  "Brand trust",
-  "Load carrying capacity"
+  "Finance / Loan"
 ];
 
 var IN_PERSON_ATTR_KEYS = [

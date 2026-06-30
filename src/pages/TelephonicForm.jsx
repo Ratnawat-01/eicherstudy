@@ -4,15 +4,10 @@ import { Save, CheckCircle2 } from 'lucide-react';
 
 const attributes = [
   "Fuel mileage",
-  "Engine power / pickup",
-  "Reliability (fewer breakdowns)",
-  "Service network / distance",
-  "Spare parts cost & availability",
+  "Engine",
+  "Service network",
   "Resale value",
-  "Purchase price / EMI",
-  "Cabin comfort",
-  "Brand trust",
-  "Load carrying capacity"
+  "Finance / Loan"
 ];
 
 function TelephonicForm() {
