@@ -24,6 +24,7 @@ function InPersonForm() {
   const [formData, setFormData] = useState({
     interviewer: '',
     date: '', time: '', interviewerName: '', brand: '', respondentCode: '',
+    competitionModel: '',
     role: '', trucksOwned: '', yearsWithBrand: '', previousBrand: '', truckAge: '', routeType: '', goodsCarried: '', avgKm: '',
     purchaseTrigger: '', triggerOther: '', switchedBrand: '', switchReason: '',
     breakdowns: '', brokenPart: '',
@@ -60,6 +61,7 @@ function InPersonForm() {
       setFormData({
         interviewer: formData.interviewer, // keep interviewer selected
         date: '', time: '', interviewerName: '', brand: '', respondentCode: '',
+        competitionModel: '',
         role: '', trucksOwned: '', yearsWithBrand: '', previousBrand: '', truckAge: '', routeType: '', goodsCarried: '', avgKm: '',
         purchaseTrigger: '', triggerOther: '', switchedBrand: '', switchReason: '',
         breakdowns: '', brokenPart: '',
@@ -181,6 +183,10 @@ function InPersonForm() {
             <div className="form-group">
               <label>Previous brand owned (if any)</label>
               <input type="text" name="previousBrand" value={formData.previousBrand} onChange={handleChange} />
+            </div>
+            <div className="form-group">
+              <label>Competition Model</label>
+              <input type="text" name="competitionModel" value={formData.competitionModel} onChange={handleChange} required placeholder="e.g. Tata LPT 1916" />
             </div>
             <div className="form-group">
               <label>Truck age (years)</label>
