@@ -24,6 +24,7 @@ function InPersonForm() {
   const [formData, setFormData] = useState({
     interviewer: '',
     date: '', time: '', interviewerName: '', brand: '', respondentCode: '',
+    model: '',
     competitionModel: '',
     role: '', trucksOwned: '', yearsWithBrand: '', previousBrand: '', truckAge: '', routeType: '', goodsCarried: '', avgKm: '',
     purchaseTrigger: '', triggerOther: '', switchedBrand: '', switchReason: '',
@@ -61,6 +62,7 @@ function InPersonForm() {
       setFormData({
         interviewer: formData.interviewer, // keep interviewer selected
         date: '', time: '', interviewerName: '', brand: '', respondentCode: '',
+        model: '',
         competitionModel: '',
         role: '', trucksOwned: '', yearsWithBrand: '', previousBrand: '', truckAge: '', routeType: '', goodsCarried: '', avgKm: '',
         purchaseTrigger: '', triggerOther: '', switchedBrand: '', switchReason: '',
@@ -152,6 +154,10 @@ function InPersonForm() {
                 <option value="Tata">Tata</option>
                 <option value="Ashok Leyland">Ashok Leyland</option>
               </select>
+            </div>
+            <div className="form-group">
+              <label>Model Name</label>
+              <input type="text" name="model" value={formData.model} onChange={handleChange} required placeholder="e.g. Pro 3019" />
             </div>
           </div>
         </div>

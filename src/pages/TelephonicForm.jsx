@@ -21,6 +21,7 @@ function TelephonicForm() {
     customerName: '',
     phoneNo: '',
     brand: '',
+    model: '',
     competitionModel: '',
     role: '',
     yearsRunning: '',
@@ -61,7 +62,7 @@ function TelephonicForm() {
       // Reset form
       setFormData({
         interviewer: formData.interviewer, // keep interviewer selected between submissions
-        customerName: '', phoneNo: '', brand: '', competitionModel: '', role: '', yearsRunning: '',
+        customerName: '', phoneNo: '', brand: '', model: '', competitionModel: '', role: '', yearsRunning: '',
         purchaseReason: '', switchedBrand: '', switchReason: '', breakdowns: '',
         decisionMaker: '', ratings: attributes.reduce((acc, attr) => ({ ...acc, [attr]: { importance: '', score: '' } }), {}),
         quote: ''
@@ -142,6 +143,10 @@ function TelephonicForm() {
                 <option value="Tata">Tata</option>
                 <option value="Ashok Leyland">Ashok Leyland</option>
               </select>
+            </div>
+            <div className="form-group">
+              <label>Model Name</label>
+              <input type="text" name="model" value={formData.model} onChange={handleChange} required placeholder="e.g. Pro 3019" />
             </div>
             <div className="form-group">
               <label>Competition Model</label>
