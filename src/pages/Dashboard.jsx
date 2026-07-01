@@ -91,7 +91,7 @@ const radarBrandDataset = (rows, attrs, impSuffix = " – Importance") => {
         pointBackgroundColor: 'rgba(245, 158, 11, 1)',
         borderWidth: 2,
       }
-    ].filter(ds => ds.data.some(val => val > 0)) // Only display brands that have data
+    ]
   };
 };
 
@@ -137,7 +137,7 @@ const radarRoleDataset = (rows, attrs, impSuffix = " – Importance") => {
         pointBackgroundColor: 'rgba(20, 184, 166, 1)',
         borderWidth: 2,
       }
-    ].filter(ds => ds.data.some(val => val > 0))
+    ]
   };
 };
 

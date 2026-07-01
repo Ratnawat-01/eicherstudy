@@ -194,10 +194,94 @@ function handleSubmit(payload) {
 
 // ─── GET DATA ─────────────────────────────────────────────────────────────────
 function handleGetData() {
+  // Automatically heal and migrate schemas if mismatched
+  migrateSheetSchema("telephonic", TELEPHONIC_HEADERS);
+  migrateSheetSchema("in-person", IN_PERSON_HEADERS);
+
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const telephonicData = getSheetData(ss.getSheetByName("telephonic"), TELEPHONIC_HEADERS);
   const inPersonData   = getSheetData(ss.getSheetByName("in-person"),  IN_PERSON_HEADERS);
   return jsonOut({ telephonic: telephonicData, inPerson: inPersonData });
+}
+
+// ─── AUTO-HEALING MIGRATION HELPER ───────────────────────────────────────────
+function migrateSheetSchema(sheetName, targetHeaders) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(sheetName);
+  if (!sheet) return;
+  
+  const lastRow = sheet.getLastRow();
+  const lastCol = sheet.getLastColumn();
+  if (lastRow <= 1 || lastCol === 0) {
+    sheet.clear();
+    writeHeaders(sheet, targetHeaders, sheetName === "telephonic" ? "#1e40af" : "#6b21a8");
+    return;
+  }
+  
+  const currentHeaders = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  
+  // Check if currentHeaders matches targetHeaders exactly
+  let matches = currentHeaders.length === targetHeaders.length;
+  if (matches) {
+    for (let i = 0; i < targetHeaders.length; i++) {
+      if (currentHeaders[i] !== targetHeaders[i]) {
+        matches = false;
+        break;
+      }
+    }
+  }
+  
+  if (matches) {
+    return; // Already matches!
+  }
+  
+  // Safe migration of existing data to match target headers
+  const dataValues = sheet.getRange(1, 1, lastRow, lastCol).getValues();
+  const oldHeaders = dataValues[0];
+  
+  const oldRows = [];
+  for (let i = 1; i < dataValues.length; i++) {
+    let rowObj = {};
+    for (let j = 0; j < oldHeaders.length; j++) {
+      rowObj[oldHeaders[j]] = dataValues[i][j];
+    }
+    oldRows.push(rowObj);
+  }
+  
+  sheet.clear();
+  writeHeaders(sheet, targetHeaders, sheetName === "telephonic" ? "#1e40af" : "#6b21a8");
+  
+  const newRows = oldRows.map(rowObj => {
+    return targetHeaders.map(header => {
+      if (rowObj[header] !== undefined) {
+        return rowObj[header];
+      }
+      
+      // Fallback: old Engine -> new Engine Power
+      if (header === "Engine Power – Importance" && rowObj["Engine – Importance"] !== undefined) {
+        return rowObj["Engine – Importance"];
+      }
+      
+      // Fallback: misplaced Quote / Note
+      if (header === "Quote / Note") {
+        // If there was a key that looks like a quote (e.g. not a rating and not empty)
+        const keys = Object.keys(rowObj);
+        const lastKey = keys[keys.length - 1];
+        if (lastKey && lastKey.indexOf("Importance") === -1 && lastKey.indexOf("Score") === -1 && lastKey !== "_rowIndex") {
+          return rowObj[lastKey];
+        }
+      }
+      
+      return "";
+    });
+  });
+  
+  if (newRows.length > 0) {
+    sheet.getRange(2, 1, newRows.length, targetHeaders.length).setValues(newRows);
+  }
+  
+  sheet.autoResizeColumns(1, sheet.getLastColumn());
+  sheet.setFrozenRows(1);
 }
 
 // ─── DELETE ROW ───────────────────────────────────────────────────────────────
