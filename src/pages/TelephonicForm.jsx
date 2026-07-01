@@ -18,6 +18,8 @@ function TelephonicForm() {
     brand: '',
     model: '',
     competitionModel: '',
+    reasonOfLossData: '',
+    actualReasonOfLoss: '',
     role: '',
     yearsRunning: '',
     purchaseReason: '',
@@ -57,7 +59,9 @@ function TelephonicForm() {
       // Reset form
       setFormData({
         interviewer: formData.interviewer, // keep interviewer selected between submissions
-        customerName: '', phoneNo: '', brand: '', model: '', competitionModel: '', role: '', yearsRunning: '',
+        customerName: '', phoneNo: '', brand: '', model: '', competitionModel: '',
+        reasonOfLossData: '', actualReasonOfLoss: '',
+        role: '', yearsRunning: '',
         purchaseReason: '', switchedBrand: '', switchReason: '', breakdowns: '',
         decisionMaker: '', ratings: attributes.reduce((acc, attr) => ({ ...acc, [attr]: { importance: '', score: '' } }), {}),
         quote: ''
@@ -146,6 +150,44 @@ function TelephonicForm() {
             <div className="form-group">
               <label>Competition Model</label>
               <input type="text" name="competitionModel" value={formData.competitionModel} onChange={handleChange} placeholder="e.g. Tata LPT 1916" />
+            </div>
+          </div>
+
+          {/* Loss Reason Fields */}
+          <div className="form-grid" style={{ marginTop: '1.5rem' }}>
+            <div className="form-group">
+              <label>Reason of Loss (in given data)</label>
+              <select name="reasonOfLossData" value={formData.reasonOfLossData} onChange={handleChange}>
+                <option value="">Select Reason</option>
+                <optgroup label="🔴 Competition">
+                  <option value="AFTER MARKET ISSUES">AFTER MARKET ISSUES</option>
+                  <option value="BLIND SPOT">BLIND SPOT</option>
+                  <option value="BRAND IMAGE">BRAND IMAGE</option>
+                  <option value="COMPETITION LOYALIST">COMPETITION LOYALIST</option>
+                  <option value="DELIVERY TIME">DELIVERY TIME</option>
+                  <option value="DISCOUNT - PRICING">DISCOUNT - PRICING</option>
+                  <option value="FINANCE ISSUE">FINANCE ISSUE</option>
+                  <option value="LOST TO CO DEALER">LOST TO CO DEALER</option>
+                  <option value="NETWORK ISSUES">NETWORK ISSUES</option>
+                  <option value="PAST PRODUCT EXPERIENCE">PAST PRODUCT EXPERIENCE</option>
+                  <option value="SPECIFIC MODEL NOT AVAILAB">SPECIFIC MODEL NOT AVAILAB</option>
+                </optgroup>
+                <optgroup label="🟡 Non-Competition">
+                  <option value="DUPLICATE ENQUIRY">DUPLICATE ENQUIRY</option>
+                  <option value="MODEL/FERT CODE CHANGE">MODEL/FERT CODE CHANGE</option>
+                  <option value="OTHERS">OTHERS</option>
+                  <option value="PURCHASE DEFERRED">PURCHASE DEFERRED</option>
+                  <option value="PURCHASED OLD VEHICLE">PURCHASED OLD VEHICLE</option>
+                  <option value="REQUIREMENT DROPPED">REQUIREMENT DROPPED</option>
+                  <option value="WEAK FINANCE PROFILE">WEAK FINANCE PROFILE</option>
+                  <option value="WRONG ALLOCATION">WRONG ALLOCATION</option>
+                  <option value="COCO CUTOVER">COCO CUTOVER</option>
+                </optgroup>
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Actual Reason of Loss (currently)</label>
+              <input type="text" name="actualReasonOfLoss" value={formData.actualReasonOfLoss} onChange={handleChange} placeholder="Enter the actual reason..." />
             </div>
           </div>
           
