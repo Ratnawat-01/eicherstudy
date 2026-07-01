@@ -257,9 +257,14 @@ function migrateSheetSchema(sheetName, targetHeaders) {
         return rowObj[header];
       }
       
-      // Fallback: old Engine -> new Engine Power
-      if (header === "Engine Power – Importance" && rowObj["Engine – Importance"] !== undefined) {
-        return rowObj["Engine – Importance"];
+      // Fallback: old Engine or "Importance" -> new Engine Power
+      if (header === "Engine Power – Importance") {
+        if (rowObj["Engine – Importance"] !== undefined) {
+          return rowObj["Engine – Importance"];
+        }
+        if (rowObj["Importance"] !== undefined) {
+          return rowObj["Importance"];
+        }
       }
       
       // Fallback: misplaced Quote / Note
