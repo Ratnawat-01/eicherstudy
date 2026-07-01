@@ -3,6 +3,17 @@ import { fetchDashboardData, deleteEntry } from '../api';
 import { Pie, Bar, Radar } from 'react-chartjs-2';
 import { Users, PhoneCall, TrendingUp, AlertTriangle, Trash2, RefreshCw, ExternalLink } from 'lucide-react';
 
+// ─── Hook: detect mobile viewport ────────────────────────────────────────────
+const useIsMobile = (breakpoint = 768) => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= breakpoint);
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= breakpoint);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [breakpoint]);
+  return isMobile;
+};
+
 const CHART_COLORS = [
   'rgba(59,130,246,0.85)',
   'rgba(139,92,246,0.85)',
@@ -117,6 +128,8 @@ function Dashboard() {
   const [deleting, setDeleting] = useState(null);
   const [activeTab, setActiveTab] = useState('all');
   const [interviewer, setInterviewer] = useState('all');
+  const isMobile = useIsMobile();
+  const isSmall  = useIsMobile(480);
 
   const loadData = async () => {
     setLoading(true); setError(null);
@@ -259,8 +272,8 @@ function Dashboard() {
     <div>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <h1 style={{ margin: 0 }}>Dashboard Overview</h1>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <h1 style={{ margin: 0, fontSize: isSmall ? '1.4rem' : undefined }}>Dashboard Overview</h1>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
           <a 
             href="https://docs.google.com/spreadsheets/d/1pylhNS66th5dr6yYXngRtrgp3dBFN8Deom0zSQKMetA/edit?usp=sharing" 
             target="_blank" 
@@ -271,14 +284,15 @@ function Dashboard() {
               color: 'white', 
               textDecoration: 'none', 
               padding: '0.5rem 1.25rem', 
-              fontSize: '0.9rem',
-              boxShadow: '0 4px 15px rgba(16, 185, 129, 0.2)' 
+              fontSize: isMobile ? '0.8rem' : '0.9rem',
+              boxShadow: '0 4px 15px rgba(16, 185, 129, 0.2)',
+              flex: isMobile ? 1 : 'none',
             }}
           >
             <ExternalLink size={16} />
             View Google Sheet
           </a>
-          <button onClick={loadData} className="btn btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.9rem' }} disabled={loading}>
+          <button onClick={loadData} className="btn btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: isMobile ? '0.8rem' : '0.9rem', flex: isMobile ? 1 : 'none' }} disabled={loading}>
             <RefreshCw size={16} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
             Refresh
           </button>
@@ -360,7 +374,7 @@ function Dashboard() {
       ) : (
         <>
           {/* Row 1: Breakdowns + Trigger */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
             <ChartCard title="Breakdowns in Last 1 Year" subtitle="All interviews combined">
               <Bar data={breakdownChart} options={{
                 maintainAspectRatio: false,
@@ -371,7 +385,7 @@ function Dashboard() {
             <ChartCard title="Primary Purchase Trigger" subtitle="All interviews combined">
               <Pie data={pieChart} options={{
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'right', labels: { color: '#94a3b8', boxWidth: 12, padding: 10 } } }
+                plugins: { legend: { position: isMobile ? 'bottom' : 'right', labels: { color: '#94a3b8', boxWidth: 12, padding: isMobile ? 8 : 10, font: { size: isMobile ? 10 : 12 } } } }
               }} />
             </ChartCard>
           </div>
@@ -383,21 +397,21 @@ function Dashboard() {
           </div>
 
           {/* Row 2: Three radar charts */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(380px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
             {/* Radar 1 – Telephonic */}
             <div style={{
               background: 'var(--glass-bg)', backdropFilter: 'blur(16px)',
               border: 'var(--glass-border)', borderRadius: 'var(--border-radius)',
-              padding: '1.5rem',
+              padding: isMobile ? '1rem' : '1.5rem',
             }}>
               <div style={{ marginBottom: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(16,185,129,1)', display: 'inline-block' }}></span>
-                  <h3 style={{ margin: 0, fontSize: '1rem' }}>📞 Telephonic (5 Attributes)</h3>
+                  <h3 style={{ margin: 0, fontSize: isMobile ? '0.9rem' : '1rem' }}>📞 Telephonic (5 Attributes)</h3>
                 </div>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', margin: 0 }}>Solid = Importance &nbsp;|&nbsp; Dashed = Brand Score</p>
               </div>
-              <div style={{ height: '380px', position: 'relative' }}>
+              <div style={{ height: isMobile ? '300px' : '380px', position: 'relative' }}>
                 {telephonicRows.length === 0
                   ? <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)' }}>No telephonic data yet</div>
                   : <Radar data={telephonicRadar} options={RADAR_OPTIONS} />}
@@ -408,16 +422,16 @@ function Dashboard() {
             <div style={{
               background: 'var(--glass-bg)', backdropFilter: 'blur(16px)',
               border: 'var(--glass-border)', borderRadius: 'var(--border-radius)',
-              padding: '1.5rem',
+              padding: isMobile ? '1rem' : '1.5rem',
             }}>
               <div style={{ marginBottom: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(245,158,11,1)', display: 'inline-block' }}></span>
-                  <h3 style={{ margin: 0, fontSize: '1rem' }}>🤝 In-Person (15 Attributes)</h3>
+                  <h3 style={{ margin: 0, fontSize: isMobile ? '0.9rem' : '1rem' }}>🤝 In-Person (15 Attributes)</h3>
                 </div>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', margin: 0 }}>Solid = Importance &nbsp;|&nbsp; Dashed = Brand Score</p>
               </div>
-              <div style={{ height: '380px', position: 'relative' }}>
+              <div style={{ height: isMobile ? '300px' : '380px', position: 'relative' }}>
                 {inPersonRows.length === 0
                   ? <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)' }}>No in-person data yet</div>
                   : <Radar data={inPersonRadar} options={RADAR_OPTIONS} />}
@@ -429,21 +443,21 @@ function Dashboard() {
               gridColumn: '1 / -1',
               background: 'var(--glass-bg)', backdropFilter: 'blur(16px)',
               border: '1px solid rgba(99,102,241,0.3)', borderRadius: 'var(--border-radius)',
-              padding: '1.5rem',
+              padding: isMobile ? '1rem' : '1.5rem',
             }}>
               <div style={{ marginBottom: '0.75rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(99,102,241,1)', display: 'inline-block' }}></span>
-                  <h3 style={{ margin: 0, fontSize: '1rem' }}>📊 Combined Comparison (5 Common Attributes)</h3>
+                  <h3 style={{ margin: 0, fontSize: isMobile ? '0.9rem' : '1rem' }}>📊 Combined Comparison (5 Common Attributes)</h3>
                 </div>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', margin: 0 }}>Overlays both form types — green/blue = Telephonic &nbsp;|&nbsp; amber/purple = In-Person</p>
               </div>
-              <div style={{ height: '460px', position: 'relative' }}>
+              <div style={{ height: isMobile ? '340px' : '460px', position: 'relative' }}>
                 {allRows.length === 0
                   ? <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)' }}>No data yet</div>
                   : <Radar data={combinedRadar} options={{
                       ...RADAR_OPTIONS,
-                      plugins: { legend: { position: 'top', labels: { color: '#94a3b8', boxWidth: 16, padding: 14 } } }
+                      plugins: { legend: { position: 'top', labels: { color: '#94a3b8', boxWidth: isMobile ? 12 : 16, padding: isMobile ? 8 : 14, font: { size: isMobile ? 10 : 12 } } } }
                     }} />}
               </div>
             </div>
@@ -452,17 +466,18 @@ function Dashboard() {
           {/* Data Table */}
           <div className="data-table-container">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-              <h2 style={{ margin: 0 }}>All Interviews <span style={{ color: 'var(--text-secondary)', fontWeight: 400, fontSize: '1rem' }}>({displayRows.length})</span></h2>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <h2 style={{ margin: 0 }}>All Interviews <span style={{ color: 'var(--text-secondary)', fontWeight: 400, fontSize: isMobile ? '0.85rem' : '1rem' }}>({displayRows.length})</span></h2>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
                 {['all', 'telephonic', 'in-person'].map(tab => (
                   <button key={tab} onClick={() => setActiveTab(tab)} style={{
-                    padding: '0.4rem 1rem', borderRadius: '8px', border: 'none', cursor: 'pointer',
-                    fontSize: '0.85rem', fontWeight: 600,
+                    padding: isMobile ? '0.35rem 0.75rem' : '0.4rem 1rem', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                    fontSize: isMobile ? '0.78rem' : '0.85rem', fontWeight: 600,
+                    flex: isMobile ? 1 : 'none',
                     background: activeTab === tab ? 'linear-gradient(135deg, var(--primary-color), var(--accent-color))' : 'rgba(255,255,255,0.06)',
                     color: activeTab === tab ? '#fff' : 'var(--text-secondary)',
                     transition: 'all 0.2s ease',
                   }}>
-                    {tab === 'all' ? 'All' : tab === 'telephonic' ? '📞 Telephonic' : '🤝 In-Person'}
+                    {tab === 'all' ? 'All' : tab === 'telephonic' ? '📞 Tel.' : '🤝 In-Person'}
                   </button>
                 ))}
               </div>
