@@ -35,9 +35,7 @@ var UNIFIED_ATTR_KEYS = [
 // ─── BUILD RATING HEADERS FROM UNIFIED KEYS ─────────────────────────────────
 // Generates 30 columns: 15 Importance + 15 Score
 function buildRatingHeaders() {
-  var importance = UNIFIED_ATTR_KEYS.map(function(k) { return k + " – Importance"; });
-  var score      = UNIFIED_ATTR_KEYS.map(function(k) { return k + " – Score"; });
-  return importance.concat(score);
+  return UNIFIED_ATTR_KEYS.map(function(k) { return k + " – Importance"; });
 }
 
 // ─── EXPLICIT COLUMN HEADERS FOR TELEPHONIC SHEET ────────────────────────────
@@ -144,8 +142,6 @@ function handleSubmit(payload) {
     ];
     // All 15 Importance ratings (telephonic only fills 5, rest will be "")
     UNIFIED_ATTR_KEYS.forEach(attr => row.push(getRating(ratings, attr, "importance")));
-    // All 15 Brand scores
-    UNIFIED_ATTR_KEYS.forEach(attr => row.push(getRating(ratings, attr, "score")));
     row.push(data.quote || "");
     sheet.appendRow(row);
 
@@ -183,8 +179,6 @@ function handleSubmit(payload) {
     ];
     // All 15 Importance ratings
     UNIFIED_ATTR_KEYS.forEach(attr => row.push(getRating(ratings, attr, "importance")));
-    // All 15 Brand scores
-    UNIFIED_ATTR_KEYS.forEach(attr => row.push(getRating(ratings, attr, "score")));
     row.push(data.verbatimQuote || "");
     row.push(data.interviewerNote || "");
     sheet.appendRow(row);

@@ -22,7 +22,7 @@ const attributes = [
 ];
 
 const initRatings = () =>
-  attributes.reduce((acc, { key }) => ({ ...acc, [key]: { importance: '', score: '' } }), {});
+  attributes.reduce((acc, { key }) => ({ ...acc, [key]: { importance: '' } }), {});
 
 function InPersonForm() {
   const [formData, setFormData] = useState({
@@ -386,7 +386,6 @@ function InPersonForm() {
                 <tr>
                   <th>Attribute</th>
                   <th>Importance (1-5)</th>
-                  <th>Brand Score (1-5)</th>
                 </tr>
               </thead>
               <tbody>
@@ -395,12 +394,6 @@ function InPersonForm() {
                     <td>{label}</td>
                     <td>
                       <select value={formData.ratings[key].importance} onChange={(e) => handleRatingChange(key, 'importance', e.target.value)}>
-                        <option value="">-</option>
-                        {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
-                      </select>
-                    </td>
-                    <td>
-                      <select value={formData.ratings[key].score} onChange={(e) => handleRatingChange(key, 'score', e.target.value)}>
                         <option value="">-</option>
                         {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
                       </select>

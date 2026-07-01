@@ -32,7 +32,7 @@ const attributes = [
 
 // Initialize all 15 keys in ratings (only 5 shown in UI, rest stay blank)
 const initRatings = () =>
-  allAttributeKeys.reduce((acc, key) => ({ ...acc, [key]: { importance: '', score: '' } }), {});
+  allAttributeKeys.reduce((acc, key) => ({ ...acc, [key]: { importance: '' } }), {});
 
 function TelephonicForm() {
   const [formData, setFormData] = useState({
@@ -325,7 +325,6 @@ function TelephonicForm() {
                 <tr>
                   <th>Attribute</th>
                   <th>Importance (1-5)</th>
-                  <th>Brand Score (1-5)</th>
                 </tr>
               </thead>
               <tbody>
@@ -334,12 +333,6 @@ function TelephonicForm() {
                     <td>{label}</td>
                     <td>
                       <select value={formData.ratings[key].importance} onChange={(e) => handleRatingChange(key, 'importance', e.target.value)}>
-                        <option value="">-</option>
-                        {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
-                      </select>
-                    </td>
-                    <td>
-                      <select value={formData.ratings[key].score} onChange={(e) => handleRatingChange(key, 'score', e.target.value)}>
                         <option value="">-</option>
                         {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
                       </select>
