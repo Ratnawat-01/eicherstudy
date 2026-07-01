@@ -2,23 +2,27 @@ import React, { useState } from 'react';
 import { submitFormData } from '../api';
 import { Save, CheckCircle2 } from 'lucide-react';
 
+// All 15 unified attribute keys (must match GAS UNIFIED_ATTR_KEYS exactly)
 const attributes = [
-  "Fuel economy / mileage",
-  "Engine power & pickup (loaded)",
-  "Load / payload capacity vs claimed",
-  "Reliability — frequency of breakdowns",
-  "Engine & gearbox durability (long-term)",
-  "Service centre network & distance",
-  "Service turnaround time (TAT)",
-  "Spare parts availability & cost",
-  "Resale value after 3-5 years",
-  "On-road purchase price",
-  "Finance / EMI flexibility & down payment",
-  "Driver cabin comfort & space",
-  "Brand trust / reputation",
-  "Tyre life & brake performance",
-  "Body / chassis strength & load durability"
+  { key: "Fuel Mileage",      label: "Fuel mileage" },
+  { key: "Engine Power",      label: "Engine power & pickup (loaded)" },
+  { key: "Load Capacity",     label: "Load / payload capacity vs claimed" },
+  { key: "Reliability",       label: "Reliability — frequency of breakdowns" },
+  { key: "Durability",        label: "Engine & gearbox durability (long-term)" },
+  { key: "Service Network",   label: "Service centre network & distance" },
+  { key: "Service TAT",       label: "Service turnaround time (TAT)" },
+  { key: "Spare Parts",       label: "Spare parts availability & cost" },
+  { key: "Resale Value",      label: "Resale value after 3-5 years" },
+  { key: "Purchase Price",    label: "On-road purchase price" },
+  { key: "Finance/Loan",      label: "Finance / EMI flexibility & down payment" },
+  { key: "Cabin Comfort",     label: "Driver cabin comfort & space" },
+  { key: "Brand Trust",       label: "Brand trust / reputation" },
+  { key: "Tyre & Brake Life", label: "Tyre life & brake performance" },
+  { key: "Body/Chassis",      label: "Body / chassis strength & load durability" }
 ];
+
+const initRatings = () =>
+  attributes.reduce((acc, { key }) => ({ ...acc, [key]: { importance: '', score: '' } }), {});
 
 function InPersonForm() {
   const [formData, setFormData] = useState({
@@ -32,7 +36,7 @@ function InPersonForm() {
     purchaseTrigger: '', triggerOther: '', switchedBrand: '', switchReason: '',
     breakdowns: '', brokenPart: '',
     decisionMaker: '', decisionFocus: '',
-    ratings: attributes.reduce((acc, attr) => ({ ...acc, [attr]: { importance: '', score: '' } }), {}),
+    ratings: initRatings(),
     verbatimQuote: '', interviewerNote: ''
   });
 
@@ -44,12 +48,12 @@ function InPersonForm() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleRatingChange = (attr, field, value) => {
+  const handleRatingChange = (attrKey, field, value) => {
     setFormData(prev => ({
       ...prev,
       ratings: {
         ...prev.ratings,
-        [attr]: { ...prev.ratings[attr], [field]: value }
+        [attrKey]: { ...prev.ratings[attrKey], [field]: value }
       }
     }));
   };
@@ -71,7 +75,7 @@ function InPersonForm() {
         purchaseTrigger: '', triggerOther: '', switchedBrand: '', switchReason: '',
         breakdowns: '', brokenPart: '',
         decisionMaker: '', decisionFocus: '',
-        ratings: attributes.reduce((acc, attr) => ({ ...acc, [attr]: { importance: '', score: '' } }), {}),
+        ratings: initRatings(),
         verbatimQuote: '', interviewerNote: ''
       });
     } catch (err) {
@@ -386,17 +390,17 @@ function InPersonForm() {
                 </tr>
               </thead>
               <tbody>
-                {attributes.map(attr => (
-                  <tr key={attr}>
-                    <td>{attr}</td>
+                {attributes.map(({ key, label }) => (
+                  <tr key={key}>
+                    <td>{label}</td>
                     <td>
-                      <select value={formData.ratings[attr].importance} onChange={(e) => handleRatingChange(attr, 'importance', e.target.value)}>
+                      <select value={formData.ratings[key].importance} onChange={(e) => handleRatingChange(key, 'importance', e.target.value)}>
                         <option value="">-</option>
                         {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
                       </select>
                     </td>
                     <td>
-                      <select value={formData.ratings[attr].score} onChange={(e) => handleRatingChange(attr, 'score', e.target.value)}>
+                      <select value={formData.ratings[key].score} onChange={(e) => handleRatingChange(key, 'score', e.target.value)}>
                         <option value="">-</option>
                         {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
                       </select>

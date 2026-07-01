@@ -1,5 +1,5 @@
 /**
- * EICHER CUSTOMER PREFERENCE STUDY - GOOGLE SHEETS BACKEND (V4 - STRUCTURED)
+ * EICHER CUSTOMER PREFERENCE STUDY - GOOGLE SHEETS BACKEND (V5 - UNIFIED ATTRIBUTES)
  *
  * HOW TO UPDATE:
  * 1. Open your Google Sheet > Extensions > Apps Script.
@@ -9,9 +9,36 @@
  * 5. Click the Edit (pencil) icon next to your active deployment.
  * 6. Under "Version", select "New version" and click Deploy.
  *
- * IMPORTANT: Also manually delete all old rows (row 1 onwards) from your 
- * 'telephonic' sheet so the new structured headers get created fresh.
+ * IMPORTANT: Run setupFreshSheets() once to recreate sheets with correct headers.
  */
+
+// ─── 15 UNIFIED ATTRIBUTE KEYS (shared across both forms) ────────────────────
+// These must EXACTLY match the keys used in the React form ratings objects.
+var UNIFIED_ATTR_KEYS = [
+  "Fuel Mileage",
+  "Engine Power",
+  "Load Capacity",
+  "Reliability",
+  "Durability",
+  "Service Network",
+  "Service TAT",
+  "Spare Parts",
+  "Resale Value",
+  "Purchase Price",
+  "Finance/Loan",
+  "Cabin Comfort",
+  "Brand Trust",
+  "Tyre & Brake Life",
+  "Body/Chassis"
+];
+
+// ─── BUILD RATING HEADERS FROM UNIFIED KEYS ─────────────────────────────────
+// Generates 30 columns: 15 Importance + 15 Score
+function buildRatingHeaders() {
+  var importance = UNIFIED_ATTR_KEYS.map(function(k) { return k + " – Importance"; });
+  var score      = UNIFIED_ATTR_KEYS.map(function(k) { return k + " – Score"; });
+  return importance.concat(score);
+}
 
 // ─── EXPLICIT COLUMN HEADERS FOR TELEPHONIC SHEET ────────────────────────────
 var TELEPHONIC_HEADERS = [
@@ -30,22 +57,10 @@ var TELEPHONIC_HEADERS = [
   "Switched Brand?",
   "Switch Reason",
   "Breakdowns (1yr)",
-  "Decision Maker",
-  // Ratings – Importance
-  "Fuel Mileage – Importance",
-  "Engine – Importance",
-  "Service Network – Importance",
-  "Resale Value – Importance",
-  "Finance/Loan – Importance",
-  // Ratings – Brand Score
-  "Fuel Mileage – Score",
-  "Engine – Score",
-  "Service Network – Score",
-  "Resale Value – Score",
-  "Finance/Loan – Score",
-  // Quote
+  "Decision Maker"
+].concat(buildRatingHeaders()).concat([
   "Quote / Note"
-];
+]);
 
 // ─── EXPLICIT COLUMN HEADERS FOR IN-PERSON SHEET ─────────────────────────────
 var IN_PERSON_HEADERS = [
@@ -74,70 +89,11 @@ var IN_PERSON_HEADERS = [
   "Breakdowns (1yr)",
   "Part Most Broken",
   "Decision Maker",
-  "Decision Focus",
-  // Ratings – Importance (15 attributes)
-  "Fuel Economy – Importance",
-  "Engine Power – Importance",
-  "Load Capacity – Importance",
-  "Reliability – Importance",
-  "Durability – Importance",
-  "Service Network – Importance",
-  "Service TAT – Importance",
-  "Spare Parts – Importance",
-  "Resale Value – Importance",
-  "Purchase Price – Importance",
-  "Finance/EMI – Importance",
-  "Cabin Comfort – Importance",
-  "Brand Trust – Importance",
-  "Tyre & Brake Life – Importance",
-  "Body/Chassis – Importance",
-  // Ratings – Brand Score
-  "Fuel Economy – Score",
-  "Engine Power – Score",
-  "Load Capacity – Score",
-  "Reliability – Score",
-  "Durability – Score",
-  "Service Network – Score",
-  "Service TAT – Score",
-  "Spare Parts – Score",
-  "Resale Value – Score",
-  "Purchase Price – Score",
-  "Finance/EMI – Score",
-  "Cabin Comfort – Score",
-  "Brand Trust – Score",
-  "Tyre & Brake Life – Score",
-  "Body/Chassis – Score",
-  // Quotes
+  "Decision Focus"
+].concat(buildRatingHeaders()).concat([
   "Verbatim Quote",
   "Interviewer Note"
-];
-
-// ─── MAP FORM FIELD KEYS TO COLUMN HEADERS ───────────────────────────────────
-var TELEPHONIC_ATTR_KEYS = [
-  "Fuel mileage",
-  "Engine",
-  "Service network",
-  "Resale value",
-  "Finance / Loan"
-];
-
-var IN_PERSON_ATTR_KEYS = [
-  "Fuel economy / mileage",
-  "Engine power & pickup (loaded)",
-  "Load / payload capacity vs claimed",
-  "Reliability — frequency of breakdowns",
-  "Engine & gearbox durability (long-term)",
-  "Service centre network & distance",
-  "Service turnaround time (TAT)",
-  "Spare parts availability & cost",
-  "Resale value after 3-5 years",
-  "On-road purchase price",
-  "Finance / EMI flexibility & down payment",
-  "Driver cabin comfort & space",
-  "Brand trust / reputation",
-  "Tyre life & brake performance",
-  "Body / chassis strength & load durability"
-];
+]);
 
 // ─── MAIN ROUTER ─────────────────────────────────────────────────────────────
 function doPost(e) {
@@ -186,10 +142,10 @@ function handleSubmit(payload) {
       data.breakdowns || "",
       data.decisionMaker || ""
     ];
-    // Importance ratings
-    TELEPHONIC_ATTR_KEYS.forEach(attr => row.push(getRating(ratings, attr, "importance")));
-    // Brand scores
-    TELEPHONIC_ATTR_KEYS.forEach(attr => row.push(getRating(ratings, attr, "score")));
+    // All 15 Importance ratings (telephonic only fills 5, rest will be "")
+    UNIFIED_ATTR_KEYS.forEach(attr => row.push(getRating(ratings, attr, "importance")));
+    // All 15 Brand scores
+    UNIFIED_ATTR_KEYS.forEach(attr => row.push(getRating(ratings, attr, "score")));
     row.push(data.quote || "");
     sheet.appendRow(row);
 
@@ -225,10 +181,10 @@ function handleSubmit(payload) {
       data.decisionMaker || "",
       data.decisionFocus || ""
     ];
-    // Importance ratings (15 attrs)
-    IN_PERSON_ATTR_KEYS.forEach(attr => row.push(getRating(ratings, attr, "importance")));
-    // Brand scores
-    IN_PERSON_ATTR_KEYS.forEach(attr => row.push(getRating(ratings, attr, "score")));
+    // All 15 Importance ratings
+    UNIFIED_ATTR_KEYS.forEach(attr => row.push(getRating(ratings, attr, "importance")));
+    // All 15 Brand scores
+    UNIFIED_ATTR_KEYS.forEach(attr => row.push(getRating(ratings, attr, "score")));
     row.push(data.verbatimQuote || "");
     row.push(data.interviewerNote || "");
     sheet.appendRow(row);

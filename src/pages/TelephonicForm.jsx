@@ -2,13 +2,37 @@ import React, { useState } from 'react';
 import { submitFormData } from '../api';
 import { Save, CheckCircle2 } from 'lucide-react';
 
-const attributes = [
-  "Fuel mileage",
-  "Engine",
-  "Service network",
-  "Resale value",
-  "Finance / Loan"
+// All 15 unified attribute keys (must match GAS UNIFIED_ATTR_KEYS exactly)
+const allAttributeKeys = [
+  "Fuel Mileage",
+  "Engine Power",
+  "Load Capacity",
+  "Reliability",
+  "Durability",
+  "Service Network",
+  "Service TAT",
+  "Spare Parts",
+  "Resale Value",
+  "Purchase Price",
+  "Finance/Loan",
+  "Cabin Comfort",
+  "Brand Trust",
+  "Tyre & Brake Life",
+  "Body/Chassis"
 ];
+
+// Telephonic interview only rates these 5 (subset of the 15)
+const attributes = [
+  { key: "Fuel Mileage",   label: "Fuel mileage" },
+  { key: "Engine Power",   label: "Engine & power" },
+  { key: "Service Network", label: "Service centre network & distance" },
+  { key: "Resale Value",   label: "Resale value" },
+  { key: "Finance/Loan",   label: "Finance / Loan" }
+];
+
+// Initialize all 15 keys in ratings (only 5 shown in UI, rest stay blank)
+const initRatings = () =>
+  allAttributeKeys.reduce((acc, key) => ({ ...acc, [key]: { importance: '', score: '' } }), {});
 
 function TelephonicForm() {
   const [formData, setFormData] = useState({
@@ -27,7 +51,7 @@ function TelephonicForm() {
     switchReason: '',
     breakdowns: '',
     decisionMaker: '',
-    ratings: attributes.reduce((acc, attr) => ({ ...acc, [attr]: { importance: '', score: '' } }), {}),
+    ratings: initRatings(),
     quote: ''
   });
 
@@ -39,12 +63,12 @@ function TelephonicForm() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleRatingChange = (attr, field, value) => {
+  const handleRatingChange = (attrKey, field, value) => {
     setFormData(prev => ({
       ...prev,
       ratings: {
         ...prev.ratings,
-        [attr]: { ...prev.ratings[attr], [field]: value }
+        [attrKey]: { ...prev.ratings[attrKey], [field]: value }
       }
     }));
   };
@@ -63,7 +87,7 @@ function TelephonicForm() {
         reasonOfLossData: '', actualReasonOfLoss: '',
         role: '', yearsRunning: '',
         purchaseReason: '', switchedBrand: '', switchReason: '', breakdowns: '',
-        decisionMaker: '', ratings: attributes.reduce((acc, attr) => ({ ...acc, [attr]: { importance: '', score: '' } }), {}),
+        decisionMaker: '', ratings: initRatings(),
         quote: ''
       });
     } catch (err) {
@@ -305,17 +329,17 @@ function TelephonicForm() {
                 </tr>
               </thead>
               <tbody>
-                {attributes.map(attr => (
-                  <tr key={attr}>
-                    <td>{attr}</td>
+                {attributes.map(({ key, label }) => (
+                  <tr key={key}>
+                    <td>{label}</td>
                     <td>
-                      <select value={formData.ratings[attr].importance} onChange={(e) => handleRatingChange(attr, 'importance', e.target.value)}>
+                      <select value={formData.ratings[key].importance} onChange={(e) => handleRatingChange(key, 'importance', e.target.value)}>
                         <option value="">-</option>
                         {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
                       </select>
                     </td>
                     <td>
-                      <select value={formData.ratings[attr].score} onChange={(e) => handleRatingChange(attr, 'score', e.target.value)}>
+                      <select value={formData.ratings[key].score} onChange={(e) => handleRatingChange(key, 'score', e.target.value)}>
                         <option value="">-</option>
                         {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
                       </select>
