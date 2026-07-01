@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchDashboardData, deleteEntry } from '../api';
-import { Pie, Bar, Radar } from 'react-chartjs-2';
-import { Users, PhoneCall, TrendingUp, AlertTriangle, Trash2, RefreshCw, ExternalLink } from 'lucide-react';
+import { Pie, Bar, Radar, Doughnut } from 'react-chartjs-2';
+import { Users, PhoneCall, TrendingUp, AlertTriangle, Trash2, RefreshCw, ExternalLink, ShieldAlert, Award, Wrench } from 'lucide-react';
 
 // ─── Hook: detect mobile viewport ────────────────────────────────────────────
 const useIsMobile = (breakpoint = 768) => {
@@ -15,80 +15,131 @@ const useIsMobile = (breakpoint = 768) => {
 };
 
 const CHART_COLORS = [
-  'rgba(59,130,246,0.85)',
-  'rgba(139,92,246,0.85)',
-  'rgba(16,185,129,0.85)',
-  'rgba(245,158,11,0.85)',
-  'rgba(239,68,68,0.85)',
-  'rgba(99,102,241,0.85)',
-  'rgba(236,72,153,0.85)',
+  'rgba(59, 130, 246, 0.85)',  // Blue
+  'rgba(139, 92, 246, 0.85)',  // Purple
+  'rgba(16, 185, 129, 0.85)',  // Green
+  'rgba(245, 158, 11, 0.85)',  // Amber
+  'rgba(239, 68, 68, 0.85)',   // Red
+  'rgba(20, 184, 166, 0.85)',  // Teal
+  'rgba(236, 72, 153, 0.85)',  // Pink
 ];
 
-// ── All 10 telephonic attribute column names (as stored in Sheets) ────────────
+// ── All 5 telephonic attribute keys (must match Google Sheet headers) ────────
 const TELEPHONIC_ATTRS = [
-  { label: 'Fuel Mileage',    imp: 'Fuel Mileage – Importance',     sc: 'Fuel Mileage – Score' },
-  { label: 'Engine',          imp: 'Engine – Importance',           sc: 'Engine – Score' },
-  { label: 'Service Network', imp: 'Service Network – Importance',  sc: 'Service Network – Score' },
-  { label: 'Resale Value',    imp: 'Resale Value – Importance',     sc: 'Resale Value – Score' },
-  { label: 'Finance / Loan',  imp: 'Finance/Loan – Importance',     sc: 'Finance/Loan – Score' },
+  { label: 'Fuel Mileage',    key: 'Fuel Mileage' },
+  { label: 'Engine Power',    key: 'Engine Power' },
+  { label: 'Service Network', key: 'Service Network' },
+  { label: 'Resale Value',    key: 'Resale Value' },
+  { label: 'Finance / Loan',  key: 'Finance/Loan' },
 ];
 
-// ── All 15 in-person attribute column names (as stored in Sheets) ─────────────
+// ── All 15 in-person attribute keys (must match Google Sheet headers) ────────
 const IN_PERSON_ATTRS = [
-  { label: 'Fuel Economy',    imp: 'Fuel Economy – Importance',     sc: 'Fuel Economy – Score' },
-  { label: 'Engine Power',    imp: 'Engine Power – Importance',     sc: 'Engine Power – Score' },
-  { label: 'Load Capacity',   imp: 'Load Capacity – Importance',    sc: 'Load Capacity – Score' },
-  { label: 'Reliability',     imp: 'Reliability – Importance',      sc: 'Reliability – Score' },
-  { label: 'Durability',      imp: 'Durability – Importance',       sc: 'Durability – Score' },
-  { label: 'Service Network', imp: 'Service Network – Importance',  sc: 'Service Network – Score' },
-  { label: 'Service TAT',     imp: 'Service TAT – Importance',      sc: 'Service TAT – Score' },
-  { label: 'Spare Parts',     imp: 'Spare Parts – Importance',      sc: 'Spare Parts – Score' },
-  { label: 'Resale Value',    imp: 'Resale Value – Importance',     sc: 'Resale Value – Score' },
-  { label: 'Purchase Price',  imp: 'Purchase Price – Importance',   sc: 'Purchase Price – Score' },
-  { label: 'Finance / EMI',   imp: 'Finance/EMI – Importance',      sc: 'Finance/EMI – Score' },
-  { label: 'Cabin Comfort',   imp: 'Cabin Comfort – Importance',    sc: 'Cabin Comfort – Score' },
-  { label: 'Brand Trust',     imp: 'Brand Trust – Importance',      sc: 'Brand Trust – Score' },
-  { label: 'Tyre & Brakes',   imp: 'Tyre & Brake Life – Importance',sc: 'Tyre & Brake Life – Score' },
-  { label: 'Body / Chassis',  imp: 'Body/Chassis – Importance',     sc: 'Body/Chassis – Score' },
-];
-
-// ── Combined: 8 common attributes (matching labels that exist in both) ────────
-const COMBINED_ATTRS = [
-  { label: 'Fuel Mileage / Economy', telImp: 'Fuel Mileage – Importance',    telSc: 'Fuel Mileage – Score',    ipImp: 'Fuel Economy – Importance',    ipSc: 'Fuel Economy – Score' },
-  { label: 'Engine',                 telImp: 'Engine – Importance',          telSc: 'Engine – Score',          ipImp: 'Engine Power – Importance',    ipSc: 'Engine Power – Score' },
-  { label: 'Service Network',        telImp: 'Service Network – Importance', telSc: 'Service Network – Score', ipImp: 'Service Network – Importance', ipSc: 'Service Network – Score' },
-  { label: 'Resale Value',           telImp: 'Resale Value – Importance',    telSc: 'Resale Value – Score',    ipImp: 'Resale Value – Importance',    ipSc: 'Resale Value – Score' },
-  { label: 'Finance / EMI / Loan',   telImp: 'Finance/Loan – Importance',    telSc: 'Finance/Loan – Score',    ipImp: 'Finance/EMI – Importance',      ipSc: 'Finance/EMI – Score' },
+  { label: 'Fuel Mileage',    key: 'Fuel Mileage' },
+  { label: 'Engine Power',    key: 'Engine Power' },
+  { label: 'Load Capacity',   key: 'Load Capacity' },
+  { label: 'Reliability',     key: 'Reliability' },
+  { label: 'Durability',      key: 'Durability' },
+  { label: 'Service Network', key: 'Service Network' },
+  { label: 'Service TAT',     key: 'Service TAT' },
+  { label: 'Spare Parts',     key: 'Spare Parts' },
+  { label: 'Resale Value',    key: 'Resale Value' },
+  { label: 'Purchase Price',  key: 'Purchase Price' },
+  { label: 'Finance / Loan',  key: 'Finance/Loan' },
+  { label: 'Cabin Comfort',   key: 'Cabin Comfort' },
+  { label: 'Brand Trust',     key: 'Brand Trust' },
+  { label: 'Tyre & Brakes',   key: 'Tyre & Brake Life' },
+  { label: 'Body / Chassis',  key: 'Body/Chassis' },
 ];
 
 // ─── Helper: compute average of a numeric column in a list of rows ────────────
 const avg = (rows, col) => {
   const vals = rows.map(r => parseFloat(r[col])).filter(v => !isNaN(v) && v > 0);
-  return vals.length ? (vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(2) : 0;
+  return vals.length ? parseFloat((vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(2)) : 0;
 };
 
-// ─── Helper: build a radar dataset object ────────────────────────────────────
-const radarDataset = (label, rows, attrs, impKey, scKey, impColor, scColor) => ({
-  labels: attrs.map(a => a.label),
-  datasets: [
-    {
-      label: `${label} – Avg Importance`,
-      data: attrs.map(a => avg(rows, a[impKey])),
-      backgroundColor: impColor.bg,
-      borderColor: impColor.border,
-      pointBackgroundColor: impColor.border,
-      borderWidth: 2,
-    },
-    {
-      label: `${label} – Avg Score`,
-      data: attrs.map(a => avg(rows, a[scKey])),
-      backgroundColor: scColor.bg,
-      borderColor: scColor.border,
-      pointBackgroundColor: scColor.border,
-      borderWidth: 2,
-    }
-  ]
-});
+// ─── Helper: build a radar dataset comparing Eicher vs Tata vs Ashok Leyland ───
+const radarBrandDataset = (rows, attrs, impSuffix = " – Importance") => {
+  const eicherRows = rows.filter(r => r['Brand'] === 'Eicher');
+  const tataRows = rows.filter(r => r['Brand'] === 'Tata');
+  const alRows = rows.filter(r => r['Brand'] === 'Ashok Leyland');
+  
+  return {
+    labels: attrs.map(a => a.label),
+    datasets: [
+      {
+        label: 'Eicher',
+        data: attrs.map(a => avg(eicherRows, a.key + impSuffix)),
+        backgroundColor: 'rgba(16, 185, 129, 0.15)',
+        borderColor: 'rgba(16, 185, 129, 1)',
+        pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+        borderWidth: 2,
+      },
+      {
+        label: 'Tata',
+        data: attrs.map(a => avg(tataRows, a.key + impSuffix)),
+        backgroundColor: 'rgba(59, 130, 246, 0.15)',
+        borderColor: 'rgba(59, 130, 246, 1)',
+        pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+        borderWidth: 2,
+      },
+      {
+        label: 'Ashok Leyland',
+        data: attrs.map(a => avg(alRows, a.key + impSuffix)),
+        backgroundColor: 'rgba(245, 158, 11, 0.15)',
+        borderColor: 'rgba(245, 158, 11, 1)',
+        pointBackgroundColor: 'rgba(245, 158, 11, 1)',
+        borderWidth: 2,
+      }
+    ].filter(ds => ds.data.some(val => val > 0)) // Only display brands that have data
+  };
+};
+
+// ─── Helper: build a radar dataset comparing Owner-Operator vs Fleet Owner vs Driver ───
+const radarRoleDataset = (rows, attrs, impSuffix = " – Importance") => {
+  const ooRows = rows.filter(r => {
+    const role = (r['Role'] || '').toLowerCase();
+    return role.includes('owner-operator') || role.includes('owner operator');
+  });
+  const foRows = rows.filter(r => {
+    const role = (r['Role'] || '').toLowerCase();
+    return role.includes('fleet owner') || role.includes('fleetoperator') || role.includes('fleet operator');
+  });
+  const drRows = rows.filter(r => {
+    const role = (r['Role'] || '').toLowerCase();
+    return role.includes('driver');
+  });
+
+  return {
+    labels: attrs.map(a => a.label),
+    datasets: [
+      {
+        label: 'Owner-Operator',
+        data: attrs.map(a => avg(ooRows, a.key + impSuffix)),
+        backgroundColor: 'rgba(139, 92, 246, 0.15)',
+        borderColor: 'rgba(139, 92, 246, 1)',
+        pointBackgroundColor: 'rgba(139, 92, 246, 1)',
+        borderWidth: 2,
+      },
+      {
+        label: 'Fleet Owner',
+        data: attrs.map(a => avg(foRows, a.key + impSuffix)),
+        backgroundColor: 'rgba(236, 72, 153, 0.15)',
+        borderColor: 'rgba(236, 72, 153, 1)',
+        pointBackgroundColor: 'rgba(236, 72, 153, 1)',
+        borderWidth: 2,
+      },
+      {
+        label: 'Driver',
+        data: attrs.map(a => avg(drRows, a.key + impSuffix)),
+        backgroundColor: 'rgba(20, 184, 166, 0.15)',
+        borderColor: 'rgba(20, 184, 166, 1)',
+        pointBackgroundColor: 'rgba(20, 184, 166, 1)',
+        borderWidth: 2,
+      }
+    ].filter(ds => ds.data.some(val => val > 0))
+  };
+};
 
 const RADAR_OPTIONS = {
   maintainAspectRatio: false,
@@ -96,8 +147,8 @@ const RADAR_OPTIONS = {
   scales: {
     r: {
       min: 0, max: 5,
-      angleLines: { color: 'rgba(255,255,255,0.08)' },
-      grid: { color: 'rgba(255,255,255,0.08)' },
+      angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
+      grid: { color: 'rgba(255, 255, 255, 0.08)' },
       pointLabels: { color: '#f8fafc', font: { size: 11 } },
       ticks: { backdropColor: 'transparent', color: '#94a3b8', stepSize: 1 }
     }
@@ -105,18 +156,18 @@ const RADAR_OPTIONS = {
 };
 
 // ─── ChartCard wrapper ────────────────────────────────────────────────────────
-const ChartCard = ({ title, subtitle, children, fullWidth = false }) => (
+const ChartCard = ({ title, subtitle, children, fullWidth = false, height }) => (
   <div className="chart-container" style={{
     gridColumn: fullWidth ? '1 / -1' : 'auto',
-    height: fullWidth ? '480px' : '420px',
+    height: height || (fullWidth ? '480px' : '420px'),
     display: 'flex',
     flexDirection: 'column',
   }}>
-    <div style={{ marginBottom: '0.5rem' }}>
+    <div style={{ marginBottom: '0.75rem' }}>
       <h3 style={{ margin: 0 }}>{title}</h3>
       {subtitle && <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '0.25rem' }}>{subtitle}</p>}
     </div>
-    <div style={{ flex: 1, position: 'relative' }}>{children}</div>
+    <div style={{ flex: 1, position: 'relative', minHeight: 0 }}>{children}</div>
   </div>
 );
 
@@ -181,6 +232,15 @@ function Dashboard() {
     : activeTab === 'in-person' ? filteredInPerson : allRows;
   const totalResponses = allRows.length;
 
+  // ─── Radar 1: Telephonic Attribute Importance by Brand ────────────────────
+  const telephonicRadar = radarBrandDataset(filteredTelephonic, TELEPHONIC_ATTRS);
+
+  // ─── Radar 2: In-Person Attribute Importance by Brand ──────────────────────
+  const inPersonRadar = radarBrandDataset(filteredInPerson, IN_PERSON_ATTRS);
+
+  // ─── Radar 3: Attribute Importance by Respondent Role (In-Person) ──────────
+  const roleRadar = radarRoleDataset(filteredInPerson, IN_PERSON_ATTRS);
+
   // ── Chart: Breakdowns bar ───────────────────────────────────────────────────
   const breakdownsCount = {};
   allRows.forEach(r => {
@@ -205,59 +265,74 @@ function Dashboard() {
     datasets: [{ data: Object.values(triggerCount), backgroundColor: CHART_COLORS, borderWidth: 0 }]
   };
 
-  // ── Radar 1: Telephonic only (10 attrs) ─────────────────────────────────────
-  const telephonicRadar = radarDataset(
-    'Telephonic', telephonicRows, TELEPHONIC_ATTRS, 'imp', 'sc',
-    { bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,1)' },
-    { bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,1)' }
-  );
+  // ── Chart: Decision Focus (Doughnut) ─────────────────────────────────────────
+  const focusCount = {};
+  filteredInPerson.forEach(r => {
+    const f = r['Decision Focus'];
+    if (f && f !== '—' && f !== 'N/A') {
+      focusCount[f] = (focusCount[f] || 0) + 1;
+    }
+  });
+  const focusChart = {
+    labels: Object.keys(focusCount),
+    datasets: [{ data: Object.values(focusCount), backgroundColor: CHART_COLORS, borderWidth: 0 }]
+  };
 
-  // ── Radar 2: In-Person only (15 attrs) ──────────────────────────────────────
-  const inPersonRadar = radarDataset(
-    'In-Person', inPersonRows, IN_PERSON_ATTRS, 'imp', 'sc',
-    { bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,1)' },
-    { bg: 'rgba(139,92,246,0.15)', border: 'rgba(139,92,246,1)' }
-  );
+  // ── Chart: Reason for Loss (Horizontal Bar) ─────────────────────────────────
+  const lossCount = {};
+  allRows.forEach(r => {
+    const reason = r['Actual Reason of Loss'] || r['Reason of Loss (Data)'];
+    if (reason && reason !== '—' && reason !== 'N/A') {
+      lossCount[reason] = (lossCount[reason] || 0) + 1;
+    }
+  });
+  const sortedLosses = Object.entries(lossCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 7);
+  const lossChart = {
+    labels: sortedLosses.map(x => x[0]),
+    datasets: [{
+      label: 'Deals Lost',
+      data: sortedLosses.map(x => x[1]),
+      backgroundColor: 'rgba(239, 68, 68, 0.75)',
+      borderRadius: 6
+    }]
+  };
 
-  // ── Radar 3: Combined – overlaying Telephonic vs In-Person (8 common attrs) ─
-  const combinedRadar = {
-    labels: COMBINED_ATTRS.map(a => a.label),
-    datasets: [
-      {
-        label: 'Telephonic – Avg Importance',
-        data: COMBINED_ATTRS.map(a => avg(telephonicRows, a.telImp)),
-        backgroundColor: 'rgba(16,185,129,0.15)',
-        borderColor: 'rgba(16,185,129,1)',
-        pointBackgroundColor: 'rgba(16,185,129,1)',
-        borderWidth: 2,
-      },
-      {
-        label: 'Telephonic – Avg Score',
-        data: COMBINED_ATTRS.map(a => avg(telephonicRows, a.telSc)),
-        backgroundColor: 'rgba(59,130,246,0.12)',
-        borderColor: 'rgba(59,130,246,1)',
-        pointBackgroundColor: 'rgba(59,130,246,1)',
-        borderWidth: 2,
-        borderDash: [4, 4],
-      },
-      {
-        label: 'In-Person – Avg Importance',
-        data: COMBINED_ATTRS.map(a => avg(inPersonRows, a.ipImp)),
-        backgroundColor: 'rgba(245,158,11,0.12)',
-        borderColor: 'rgba(245,158,11,1)',
-        pointBackgroundColor: 'rgba(245,158,11,1)',
-        borderWidth: 2,
-      },
-      {
-        label: 'In-Person – Avg Score',
-        data: COMBINED_ATTRS.map(a => avg(inPersonRows, a.ipSc)),
-        backgroundColor: 'rgba(139,92,246,0.12)',
-        borderColor: 'rgba(139,92,246,1)',
-        pointBackgroundColor: 'rgba(139,92,246,1)',
-        borderWidth: 2,
-        borderDash: [4, 4],
-      },
-    ]
+  // ── Chart: Component Failures / Part Broken (Vertical Bar) ──────────────────
+  const partsCount = {};
+  filteredInPerson.forEach(r => {
+    const p = r['Part Most Broken'];
+    if (p && p !== '—' && p !== 'N/A' && p !== 'Never') {
+      partsCount[p] = (partsCount[p] || 0) + 1;
+    }
+  });
+  const partsChart = {
+    labels: Object.keys(partsCount),
+    datasets: [{
+      label: 'Failures Reported',
+      data: Object.values(partsCount),
+      backgroundColor: 'rgba(245, 158, 11, 0.75)',
+      borderRadius: 6
+    }]
+  };
+
+  // ── Chart: Brand Switching Reasons (Vertical Bar) ──────────────────────────
+  const switchReasonCount = {};
+  allRows.forEach(r => {
+    const sr = r['Switch Reason'];
+    if (sr && sr !== '—' && sr !== 'N/A') {
+      switchReasonCount[sr] = (switchReasonCount[sr] || 0) + 1;
+    }
+  });
+  const switchReasonChart = {
+    labels: Object.keys(switchReasonCount),
+    datasets: [{
+      label: 'Mentions',
+      data: Object.values(switchReasonCount),
+      backgroundColor: 'rgba(99, 102, 241, 0.75)',
+      borderRadius: 6
+    }]
   };
 
   if (loading && !totalResponses) {
@@ -373,16 +448,22 @@ function Dashboard() {
         </div>
       ) : (
         <>
-          {/* Row 1: Breakdowns + Trigger */}
+          {/* ─── SECTION 1: OVERVIEW & PURCHASE DRIVERS ─── */}
+          <div style={{ margin: '2rem 0 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Award size={20} style={{ color: 'var(--primary-color)' }} />
+            <h2 style={{ margin: 0, fontSize: '1.3rem' }}>Section 1: Overview & Purchase Drivers</h2>
+            <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }}></div>
+          </div>
+          
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
-            <ChartCard title="Breakdowns in Last 1 Year" subtitle="All interviews combined">
+            <ChartCard title="Breakdowns in Last 1 Year" subtitle="Reliability overview of surveyed trucks">
               <Bar data={breakdownChart} options={{
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { stepSize: 1 } } }
               }} />
             </ChartCard>
-            <ChartCard title="Primary Purchase Trigger" subtitle="All interviews combined">
+            <ChartCard title="Primary Purchase Trigger" subtitle="Single biggest reason for buying current truck">
               <Pie data={pieChart} options={{
                 maintainAspectRatio: false,
                 plugins: { legend: { position: isMobile ? 'bottom' : 'right', labels: { color: '#94a3b8', boxWidth: 12, padding: isMobile ? 8 : 10, font: { size: isMobile ? 10 : 12 } } } }
@@ -390,13 +471,13 @@ function Dashboard() {
             </ChartCard>
           </div>
 
-          {/* Row 2: Section heading */}
-          <div style={{ margin: '0.5rem 0 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <h2 style={{ margin: 0, fontSize: '1.3rem' }}>Attribute Importance vs Brand Score</h2>
+          {/* ─── SECTION 2: BRAND & ROLE CUSTOMER PREFERENCES (RADARS) ─── */}
+          <div style={{ margin: '2.5rem 0 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Users size={20} style={{ color: 'var(--accent-color)' }} />
+            <h2 style={{ margin: 0, fontSize: '1.3rem' }}>Section 2: Customer Preferences & Brand Comparisons</h2>
             <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }}></div>
           </div>
 
-          {/* Row 2: Three radar charts */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(380px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
             {/* Radar 1 – Telephonic */}
             <div style={{
@@ -407,9 +488,9 @@ function Dashboard() {
               <div style={{ marginBottom: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(16,185,129,1)', display: 'inline-block' }}></span>
-                  <h3 style={{ margin: 0, fontSize: isMobile ? '0.9rem' : '1rem' }}>📞 Telephonic (5 Attributes)</h3>
+                  <h3 style={{ margin: 0, fontSize: isMobile ? '0.9rem' : '1rem' }}>📞 Telephonic Brand Preferences (5 Attrs)</h3>
                 </div>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', margin: 0 }}>Solid = Importance &nbsp;|&nbsp; Dashed = Brand Score</p>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', margin: 0 }}>Average attribute importance ratings by brand</p>
               </div>
               <div style={{ height: isMobile ? '300px' : '380px', position: 'relative' }}>
                 {telephonicRows.length === 0
@@ -427,9 +508,9 @@ function Dashboard() {
               <div style={{ marginBottom: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(245,158,11,1)', display: 'inline-block' }}></span>
-                  <h3 style={{ margin: 0, fontSize: isMobile ? '0.9rem' : '1rem' }}>🤝 In-Person (15 Attributes)</h3>
+                  <h3 style={{ margin: 0, fontSize: isMobile ? '0.9rem' : '1rem' }}>🤝 In-Person Brand Preferences (15 Attrs)</h3>
                 </div>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', margin: 0 }}>Solid = Importance &nbsp;|&nbsp; Dashed = Brand Score</p>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', margin: 0 }}>Deep-dive attribute importance comparison by brand</p>
               </div>
               <div style={{ height: isMobile ? '300px' : '380px', position: 'relative' }}>
                 {inPersonRows.length === 0
@@ -438,7 +519,7 @@ function Dashboard() {
               </div>
             </div>
 
-            {/* Radar 3 – Combined */}
+            {/* Radar 3 – Role Preference Analysis */}
             <div style={{
               gridColumn: '1 / -1',
               background: 'var(--glass-bg)', backdropFilter: 'blur(16px)',
@@ -448,19 +529,79 @@ function Dashboard() {
               <div style={{ marginBottom: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(99,102,241,1)', display: 'inline-block' }}></span>
-                  <h3 style={{ margin: 0, fontSize: isMobile ? '0.9rem' : '1rem' }}>📊 Combined Comparison (5 Common Attributes)</h3>
+                  <h3 style={{ margin: 0, fontSize: isMobile ? '0.9rem' : '1rem' }}>📊 Segment Preference Analysis by Respondent Role (In-Person)</h3>
                 </div>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', margin: 0 }}>Overlays both form types — green/blue = Telephonic &nbsp;|&nbsp; amber/purple = In-Person</p>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', margin: 0 }}>Comparison of priorities between Owner-Operators, Fleet Owners, and Drivers</p>
               </div>
               <div style={{ height: isMobile ? '340px' : '460px', position: 'relative' }}>
-                {allRows.length === 0
-                  ? <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)' }}>No data yet</div>
-                  : <Radar data={combinedRadar} options={{
+                {inPersonRows.length === 0
+                  ? <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)' }}>No in-person data yet</div>
+                  : <Radar data={roleRadar} options={{
                       ...RADAR_OPTIONS,
                       plugins: { legend: { position: 'top', labels: { color: '#94a3b8', boxWidth: isMobile ? 12 : 16, padding: isMobile ? 8 : 14, font: { size: isMobile ? 10 : 12 } } } }
                     }} />}
               </div>
             </div>
+          </div>
+
+          {/* ─── SECTION 3: DEAL LOSS & SWITCHING BARRIERS ─── */}
+          <div style={{ margin: '2.5rem 0 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <ShieldAlert size={20} style={{ color: 'var(--danger)' }} />
+            <h2 style={{ margin: 0, fontSize: '1.3rem' }}>Section 3: Deal Loss Reasons & Brand Switching Barriers</h2>
+            <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }}></div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
+            <ChartCard title="Top Reasons for Deal Loss" subtitle="Why customers are choosing competition or deferring purchase">
+              <Bar data={lossChart} options={{
+                indexAxis: 'y',
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { stepSize: 1 } }, y: { grid: { display: false } } }
+              }} />
+            </ChartCard>
+            <ChartCard title="Reasons for Brand Switching" subtitle="Q4. Primary reason for switching or considering switching brands">
+              {Object.keys(switchReasonCount).length === 0 ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No switching data available</div>
+              ) : (
+                <Bar data={switchReasonChart} options={{
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: false } },
+                  scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { stepSize: 1 } } }
+                }} />
+              )}
+            </ChartCard>
+          </div>
+
+          {/* ─── SECTION 4: COMPONENT RELIABILITY & INFLUENCES ─── */}
+          <div style={{ margin: '2.5rem 0 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Wrench size={20} style={{ color: 'var(--warning)' }} />
+            <h2 style={{ margin: 0, fontSize: '1.3rem' }}>Section 4: Component Reliability & Decision Focus</h2>
+            <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }}></div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
+            <ChartCard title="Component Failure Distribution" subtitle="Parts most often responsible for service breakdowns">
+              {Object.keys(partsCount).length === 0 ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No breakdowns reported with components</div>
+              ) : (
+                <Bar data={partsChart} options={{
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: false } },
+                  scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { stepSize: 1 } } }
+                }} />
+              )}
+            </ChartCard>
+            <ChartCard title="Decision Influencer Focus" subtitle="What influencers/partners focus on most during purchase">
+              {Object.keys(focusCount).length === 0 ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No decision focus data recorded</div>
+              ) : (
+                <Doughnut data={focusChart} options={{
+                  maintainAspectRatio: false,
+                  plugins: { legend: { position: isMobile ? 'bottom' : 'right', labels: { color: '#94a3b8', boxWidth: 12, padding: isMobile ? 8 : 10, font: { size: isMobile ? 10 : 12 } } } }
+                }} />
+              )}
+            </ChartCard>
           </div>
 
           {/* Data Table */}
