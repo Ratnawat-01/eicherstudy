@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchDashboardData, deleteEntry } from '../api';
-import { Pie, Bar, Radar, Doughnut } from 'react-chartjs-2';
-import { Users, PhoneCall, TrendingUp, AlertTriangle, Trash2, RefreshCw, ExternalLink, ShieldAlert, Award, Wrench } from 'lucide-react';
+import { Pie, Bar, Radar } from 'react-chartjs-2';
+import { Users, PhoneCall, TrendingUp, AlertTriangle, Trash2, RefreshCw, ExternalLink, ShieldAlert, Award } from 'lucide-react';
 
 // ─── Hook: detect mobile viewport ────────────────────────────────────────────
 const useIsMobile = (breakpoint = 768) => {
@@ -265,19 +265,6 @@ function Dashboard() {
     datasets: [{ data: Object.values(triggerCount), backgroundColor: CHART_COLORS, borderWidth: 0 }]
   };
 
-  // ── Chart: Decision Focus (Doughnut) ─────────────────────────────────────────
-  const focusCount = {};
-  filteredInPerson.forEach(r => {
-    const f = r['Decision Focus'];
-    if (f && f !== '—' && f !== 'N/A') {
-      focusCount[f] = (focusCount[f] || 0) + 1;
-    }
-  });
-  const focusChart = {
-    labels: Object.keys(focusCount),
-    datasets: [{ data: Object.values(focusCount), backgroundColor: CHART_COLORS, borderWidth: 0 }]
-  };
-
   // ── Chart: Reason of Loss (Data) – Horizontal Bar ────────────────────────────
   const lossDataCount = {};
   allRows.forEach(r => {
@@ -317,24 +304,6 @@ function Dashboard() {
     datasets: [{
       label: 'Deals Lost',
       data: sortedActualLoss.map(x => x[1]),
-      backgroundColor: 'rgba(245, 158, 11, 0.75)',
-      borderRadius: 6
-    }]
-  };
-
-  // ── Chart: Component Failures / Part Broken (Vertical Bar) ──────────────────
-  const partsCount = {};
-  filteredInPerson.forEach(r => {
-    const p = r['Part Most Broken'];
-    if (p && p !== '—' && p !== 'N/A' && p !== 'Never') {
-      partsCount[p] = (partsCount[p] || 0) + 1;
-    }
-  });
-  const partsChart = {
-    labels: Object.keys(partsCount),
-    datasets: [{
-      label: 'Failures Reported',
-      data: Object.values(partsCount),
       backgroundColor: 'rgba(245, 158, 11, 0.75)',
       borderRadius: 6
     }]
@@ -575,7 +544,7 @@ function Dashboard() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
-            <ChartCard title="Reason of Loss (Data)" subtitle="Category-level deal loss reasons from dropdown selections">
+            <ChartCard title="Top Reasons for Deal Loss (Acc to data)" subtitle="Category-level deal loss reasons from dropdown selections">
               {sortedLossData.length === 0 ? (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No loss data recorded</div>
               ) : (
@@ -587,7 +556,7 @@ function Dashboard() {
                 }} />
               )}
             </ChartCard>
-            <ChartCard title="Actual Reason of Loss" subtitle="Specific reasons written by interviewers for each deal loss">
+            <ChartCard title="Actual Reasons for Deal Loss" subtitle="Specific reasons written by interviewers for each deal loss">
               {sortedActualLoss.length === 0 ? (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No actual loss reasons recorded</div>
               ) : (
@@ -612,36 +581,7 @@ function Dashboard() {
             </ChartCard>
           </div>
 
-          {/* ─── SECTION 4: COMPONENT RELIABILITY & INFLUENCES ─── */}
-          <div style={{ margin: '2.5rem 0 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <Wrench size={20} style={{ color: 'var(--warning)' }} />
-            <h2 style={{ margin: 0, fontSize: '1.3rem' }}>Section 4: Component Reliability & Decision Focus</h2>
-            <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }}></div>
-          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
-            <ChartCard title="Component Failure Distribution" subtitle="Parts most often responsible for service breakdowns">
-              {Object.keys(partsCount).length === 0 ? (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No breakdowns reported with components</div>
-              ) : (
-                <Bar data={partsChart} options={{
-                  maintainAspectRatio: false,
-                  plugins: { legend: { display: false } },
-                  scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { stepSize: 1 } } }
-                }} />
-              )}
-            </ChartCard>
-            <ChartCard title="Decision Influencer Focus" subtitle="What influencers/partners focus on most during purchase">
-              {Object.keys(focusCount).length === 0 ? (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No decision focus data recorded</div>
-              ) : (
-                <Doughnut data={focusChart} options={{
-                  maintainAspectRatio: false,
-                  plugins: { legend: { position: isMobile ? 'bottom' : 'right', labels: { color: '#94a3b8', boxWidth: 12, padding: isMobile ? 8 : 10, font: { size: isMobile ? 10 : 12 } } } }
-                }} />
-              )}
-            </ChartCard>
-          </div>
 
           {/* Data Table */}
           <div className="data-table-container">
