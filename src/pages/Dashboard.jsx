@@ -278,23 +278,46 @@ function Dashboard() {
     datasets: [{ data: Object.values(focusCount), backgroundColor: CHART_COLORS, borderWidth: 0 }]
   };
 
-  // ── Chart: Reason for Loss (Horizontal Bar) ─────────────────────────────────
-  const lossCount = {};
+  // ── Chart: Reason of Loss (Data) – Horizontal Bar ────────────────────────────
+  const lossDataCount = {};
   allRows.forEach(r => {
-    const reason = r['Actual Reason of Loss'] || r['Reason of Loss (Data)'];
-    if (reason && reason !== '—' && reason !== 'N/A') {
-      lossCount[reason] = (lossCount[reason] || 0) + 1;
+    const reason = r['Reason of Loss (Data)'];
+    if (reason && reason !== '—' && reason !== 'N/A' && String(reason).trim()) {
+      const key = String(reason).trim();
+      lossDataCount[key] = (lossDataCount[key] || 0) + 1;
     }
   });
-  const sortedLosses = Object.entries(lossCount)
+  const sortedLossData = Object.entries(lossDataCount)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 7);
-  const lossChart = {
-    labels: sortedLosses.map(x => x[0]),
+    .slice(0, 8);
+  const lossDataChart = {
+    labels: sortedLossData.map(x => x[0]),
     datasets: [{
       label: 'Deals Lost',
-      data: sortedLosses.map(x => x[1]),
+      data: sortedLossData.map(x => x[1]),
       backgroundColor: 'rgba(239, 68, 68, 0.75)',
+      borderRadius: 6
+    }]
+  };
+
+  // ── Chart: Actual Reason of Loss – Horizontal Bar ───────────────────────────
+  const actualLossCount = {};
+  allRows.forEach(r => {
+    const reason = r['Actual Reason of Loss'];
+    if (reason && reason !== '—' && reason !== 'N/A' && String(reason).trim()) {
+      const key = String(reason).trim();
+      actualLossCount[key] = (actualLossCount[key] || 0) + 1;
+    }
+  });
+  const sortedActualLoss = Object.entries(actualLossCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+  const actualLossChart = {
+    labels: sortedActualLoss.map(x => x[0]),
+    datasets: [{
+      label: 'Deals Lost',
+      data: sortedActualLoss.map(x => x[1]),
+      backgroundColor: 'rgba(245, 158, 11, 0.75)',
       borderRadius: 6
     }]
   };
@@ -552,13 +575,29 @@ function Dashboard() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
-            <ChartCard title="Top Reasons for Deal Loss" subtitle="Why customers are choosing competition or deferring purchase">
-              <Bar data={lossChart} options={{
-                indexAxis: 'y',
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { stepSize: 1 } }, y: { grid: { display: false } } }
-              }} />
+            <ChartCard title="Reason of Loss (Data)" subtitle="Category-level deal loss reasons from dropdown selections">
+              {sortedLossData.length === 0 ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No loss data recorded</div>
+              ) : (
+                <Bar data={lossDataChart} options={{
+                  indexAxis: 'y',
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: false } },
+                  scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { stepSize: 1 } }, y: { grid: { display: false } } }
+                }} />
+              )}
+            </ChartCard>
+            <ChartCard title="Actual Reason of Loss" subtitle="Specific reasons written by interviewers for each deal loss">
+              {sortedActualLoss.length === 0 ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No actual loss reasons recorded</div>
+              ) : (
+                <Bar data={actualLossChart} options={{
+                  indexAxis: 'y',
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: false } },
+                  scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { stepSize: 1 } }, y: { grid: { display: false } } }
+                }} />
+              )}
             </ChartCard>
             <ChartCard title="Reasons for Brand Switching" subtitle="Q4. Primary reason for switching or considering switching brands">
               {Object.keys(switchReasonCount).length === 0 ? (
